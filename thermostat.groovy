@@ -257,12 +257,14 @@ def setStatus()
 			'DNT': '1',
 			'Accept-Encoding': 'gzip,deflate,sdch',
 			'Cache-Control': 'max-age=0',
+            'Content-Type':'application/json; charset=UTF-8',
 			'Accept-Language': 'en-US,en,q=0.8',
 			'Connection': 'keep-alive',
 			'Host': 'rs.alarmnet.com',
-			'Referer': "https://rs.alarmnet.com/TotalConnectComfort/Device/Control/${settings.honeywelldevice}",
+			'Referer': "https://rs.alarmnet.com/TotalConnectComfort/",
 			'X-Requested-With': 'XMLHttpRequest',
 			'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36',
+            'Referer':'/TotalConnectComfort/Device/CheckDataSession/${settings.honeywelldevice}',
 			'Cookie': data.cookiess		
 		],
 		body: 
