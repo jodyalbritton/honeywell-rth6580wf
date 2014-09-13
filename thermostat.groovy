@@ -287,9 +287,9 @@ def getStatus()
 {
 	log.debug "Executing 'getStatus'"
 	def today= new Date()
-	log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/${settings.honeywelldevice}?_=$today.time"
+	log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/${settings.honeywelldevice}?_="+today.time
 
-	def params = 
+	def params =
 	[
 		uri: "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/${settings.honeywelldevice}",
 		headers: 
@@ -304,13 +304,13 @@ def getStatus()
 			'Referer': 'https://rs.alarmnet.com/TotalConnectComfort/',
 			'X-Requested-With': 'XMLHttpRequest',
 			'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36',
-			'Cookie': data.cookiess		
+			'Cookie': data.cookiess	
 		],
 	]
 
-	httpGet(params) 
-	{ 
-		response ->
+	httpGet(params) { response ->
+
+		
 		log.debug "Request was successful, $response.status"
 
 		
@@ -324,8 +324,8 @@ def getStatus()
 		def OutdoorHumidityAvailable = response.data.latestData.uiData.OutdoorHumidityAvailable
 		def OutdoorHumidity = response.data.latestData.uiData.OutdoorHumidity
 		def IndoorHumidity = response.data.latestData.uiData.IndoorHumidity
-		def outHumidity = response.data.latestData.weather.Humidity
-		def Humidity = outHumidity
+		//def outHumidity = response.data.latestData.weather.Humidity
+		//def Humidity = outHumidity
 
 		if (OutdoorHumiditySensorAvailable == 'true')
 			Humidity = OutdoorHumidity
@@ -412,14 +412,15 @@ def login()
 	{ 
 		response ->
 		log.debug "Request was successful, $response.status"
-		log.debug response.headers
-		response.getHeaders('Set-Cookie').each 
+		response.getHeaders('set-cookie').each 
 		{
-			String cookie = it.value.split(';')[0]
+			String cookie = it.value.split(';|,')[0]
 			log.debug "Adding cookie to collection: $cookie"
-			data.cookiess = data.cookiess + cookie + ';'
+            if(cookie != ".ASPXAUTH_TH_A=") {
+			data.cookiess = data.cookiess+cookie+';'
+            }
 		}
-		//log.debug "cookies: $data.cookies"
+		log.debug "cookies: $data.cookiess"
 	}
 }
 
