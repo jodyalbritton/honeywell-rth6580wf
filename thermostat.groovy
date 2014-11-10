@@ -387,10 +387,10 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
 		//def outHumidity = response.data.latestData.weather.Humidity
         def Humidity = outHumidity
 
-		if (OutdoorHumiditySensorAvailable == 'true')
+		if (OutdoorHumiditySensorAvailable)
         	Humidity = OutdoorHumidity
 
-        if (IndoorHumiditySensorAvailable == 'true')
+        if (IndoorHumiditySensorAvailable)
         	Humidity = IndoorHumidity
         
         log.debug curTemp
