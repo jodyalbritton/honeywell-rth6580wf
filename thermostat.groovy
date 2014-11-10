@@ -24,6 +24,7 @@ metadata {
 		capability "Refresh"
 		capability "Temperature Measurement"
 		capability "Sensor"
+        capability "Relative Humidity Measurement"
         
     	command "heatLevelUp"
 		command "heatLevelDown"
@@ -55,8 +56,8 @@ metadata {
         }
         standardTile("thermostatFanMode", "device.thermostatFanMode", inactiveLabel: false, canChangeIcon: true) {
             state "auto", label:'${name}', action:"thermostat.fanOn", icon: "st.Appliances.appliances11"
-            state "on", label:'${name}', action:"thermostat.fanCirculate", icon: "st.Appliances.appliances11"
-            state "circulate", label:'${name}', action:"thermostat.fanAuto", icon: "st.Appliances.appliances11"
+            state "on", label:'${name}', action:"thermostat.fanAuto", icon: "st.Appliances.appliances11", backgroundColor: '#44b621'
+        
         }
 
         controlTile("coolSliderControl", "device.coolingSetpoint", "slider", height: 3, width: 1, inactiveLabel: false) {
@@ -73,7 +74,7 @@ metadata {
         }
         valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false) 
 		{
-			state "default", label:'${currentValue}°F', unit:"F",
+			state "default", label:'Cool @${currentValue}°F', unit:"F",
 			 backgroundColors:
 			 [
 				[value: 31, color: "#153591"],
@@ -87,7 +88,7 @@ metadata {
 		}
         valueTile("heatingSetpoint", "device.heatingSetpoint", inactiveLabel: false) 
 		{
-			state "default", label:'${currentValue}°F', unit:"F",
+			state "default", label:'Heat @${currentValue}°F', unit:"F",
 			 backgroundColors:
 			 [
 				[value: 31, color: "#153591"],
@@ -292,8 +293,6 @@ def setThermostatFanMode(mode) {
 
     if(mode==0)
      	fanMode = 'auto'
-    if(mode==2)
-    	fanMode = 'circulate'
     if(mode==1)
     	fanMode = 'on'
 
@@ -380,29 +379,43 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         def coolSetPoint = response.data.latestData.uiData.CoolSetpoint
         def heatSetPoint = response.data.latestData.uiData.HeatSetpoint
 
-		def IndoorHumiditySensorAvailable = response.data.latestData.uiData.IndoorHumiditySensorAvailable
-        //def OutdoorHumidityAvailable = response.data.latestData.uiData.OutdoorHumidityAvailable
-        //def OutdoorHumidity = response.data.latestData.uiData.OutdoorHumidity
-        //def IndoorHumidity = response.data.latestData.uiData.IndoorHumidity
-		//def outHumidity = response.data.latestData.weather.Humidity
-        def Humidity = outHumidity
+		
+        
+        
+        
+       
+        
+        
+        def IndoorHumiditySensorAvailable = response.data.latestData.uiData.IndoorHumiditySensorAvailable
+        def OutdoorHumidityAvailable = response.data.latestData.uiData.OutdoorHumidityAvailable
+        def OutdoorHumidity = response.data.latestData.uiData.OutdoorHumidity
+        def IndoorHumidity = response.data.latestData.uiData.IndoorHumidity
+		def WeatherHumidity = response.data.latestData.uiData.WeatherHumidity
+        def Humidity = WeatherHumidity
+   
 
-		if (OutdoorHumiditySensorAvailable)
+		if (OutdoorHumiditySensorAvailable){
         	Humidity = OutdoorHumidity
+        } else {
+        	Humidity = WeatherHumidity
+        }
 
-        if (IndoorHumiditySensorAvailable)
+        if (IndoorHumiditySensorAvailable){
         	Humidity = IndoorHumidity
+        }else {
+        	Humidity = WeatherHumidity
+        }
+        
+        
         
         log.debug curTemp
         log.debug fanMode
         log.debug switchPos
-        log.debug outHumidity
+        log.debug Humidity
  		//fan mode 0=auto, 2=circ, 1=on
         
         if(fanMode==0)
         	fanMode = 'auto'
-        if(fanMode==2)
-        	fanMode = 'circulate'
         if(fanMode==1)
         	fanMode = 'on'
 
