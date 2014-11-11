@@ -378,6 +378,8 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         def switchPos = response.data.latestData.uiData.SystemSwitchPosition
         def coolSetPoint = response.data.latestData.uiData.CoolSetpoint
         def heatSetPoint = response.data.latestData.uiData.HeatSetpoint
+        def statusCool = response.data.latestData.uiData.StatusCool
+        def statusHeat = response.data.latestData.uiData.StatusHeat
 
 		
         
@@ -406,6 +408,12 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         	Humidity = WeatherHumidity
         }
         
+        def operatingState = "idle"
+        if(statusCool == 1 && switchPos == 3) {
+            operatingState = "cooling"
+        } else if (statusHeat == 1 && switchPos == 1) {
+            operatingState = "heating"
+        }
         
         
         log.debug curTemp
@@ -427,6 +435,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         	switchPos = 'cool'
 
 
+        sendEvent(name: 'thermostatOperatingState', value: operatingState)
         sendEvent(name: 'thermostatFanMode', value: fanMode)
         sendEvent(name: 'thermostatMode', value: switchPos)
         sendEvent(name: 'coolingSetpoint', value: coolSetPoint as Integer)
