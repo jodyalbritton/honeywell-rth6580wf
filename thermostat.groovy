@@ -100,14 +100,23 @@ metadata {
 				[value: 96, color: "#bc2323"]
 			]   
 		}
-        valueTile("humidity", "device.humidity", inactiveLabel: false, decoration: "flat") {
+        valueTile("humidity", "device.humidity", inactiveLabel: false) {
             state "default", label:'${currentValue}%', unit:"Humidity"
         }
+        
+        //tile added for operating state - Create the tiles for each possible state, look at other examples if you wish to change the icons here. 
+        
+        standardTile("thermostatOperatingState", "device.thermostatOperatingState", inactiveLabel: false) {
+            state "heating", label:'${name}'
+            state "cooling", label:'${name}' 
+            state "idle", label:'${name}'
+        }
+        
         standardTile("refresh", "device.thermostatMode", inactiveLabel: false, decoration: "flat") {
             state "default", action:"polling.poll", icon:"st.secondary.refresh"
         }
         
-standardTile("heatLevelUp", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
+        standardTile("heatLevelUp", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
                         state "heatLevelUp", label:'  ', action:"heatLevelUp", icon:"st.thermostat.thermostat-up"
         }
         standardTile("heatLevelDown", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
@@ -120,7 +129,7 @@ standardTile("heatLevelUp", "device.heatingSetpoint", canChangeIcon: false, inac
                         state "coolLevelDown", label:'  ', action:"coolLevelDown", icon:"st.thermostat.thermostat-down"
         }        
         main "temperature"
-        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" , "humidity", "refresh",])
+        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" , "humidity","thermostatOperatingState", "refresh",])
     }
 }
 
@@ -380,6 +389,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         def heatSetPoint = response.data.latestData.uiData.HeatSetpoint
         def statusCool = response.data.latestData.uiData.StatusCool
         def statusHeat = response.data.latestData.uiData.StatusHeat
+        
 
 		
         
@@ -387,19 +397,21 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         
        
         
+        //humidity section - needs work 
+        
         
         def IndoorHumiditySensorAvailable = response.data.latestData.uiData.IndoorHumiditySensorAvailable
         def OutdoorHumidityAvailable = response.data.latestData.uiData.OutdoorHumidityAvailable
         def OutdoorHumidity = response.data.latestData.uiData.OutdoorHumidity
         def IndoorHumidity = response.data.latestData.uiData.IndoorHumidity
 		def WeatherHumidity = response.data.latestData.uiData.WeatherHumidity
-        def Humidity = WeatherHumidity
+        def Humidity = OutdoorHumidity
    
 
 		if (OutdoorHumiditySensorAvailable){
         	Humidity = OutdoorHumidity
         } else {
-        	Humidity = WeatherHumidity
+            Humidity = WeatherHumidity
         }
 
         if (IndoorHumiditySensorAvailable){
@@ -407,6 +419,11 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         }else {
         	Humidity = WeatherHumidity
         }
+        
+        
+        //humidity section end 
+        
+        
         
         def operatingState = "idle"
         if(statusCool == 1 && switchPos == 3) {
@@ -419,7 +436,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         log.debug curTemp
         log.debug fanMode
         log.debug switchPos
-        log.debug Humidity
+        log.debug remoteHumidity
  		//fan mode 0=auto, 2=circ, 1=on
         
         if(fanMode==0)
@@ -441,6 +458,8 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         sendEvent(name: 'coolingSetpoint', value: coolSetPoint as Integer)
         sendEvent(name: 'heatingSetpoint', value: heatSetPoint as Integer)
         sendEvent(name: 'temperature', value: curTemp as Integer, state: switchPos)
+        
+        //still not sure why this is returning null in the console 
         sendEvent(name: 'humidity', value: Humidity as Integer)
 
  
