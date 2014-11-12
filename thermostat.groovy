@@ -501,7 +501,7 @@ def login() {
         body: [timeOffset: '240', UserName: "${settings.username}", Password: "${settings.password}", RememberMe: 'false']
     ]
 
-	data.cookiess = ''
+	//data.cookiess = ''
 
     httpPost(params) { response ->
         log.debug "Request was successful, $response.status"
@@ -513,7 +513,7 @@ def login() {
 			data.cookiess = data.cookiess+cookie+';'
             }
         }
-        //log.debug "cookies: $data.cookies"
+        log.debug "cookies: $data.cookies"
 
     }
     
