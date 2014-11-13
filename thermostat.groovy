@@ -24,7 +24,6 @@ metadata {
 		capability "Refresh"
 		capability "Temperature Measurement"
 		capability "Sensor"
-        capability "Relative Humidity Measurement"
         
     	command "heatLevelUp"
 		command "heatLevelDown"
@@ -100,9 +99,7 @@ metadata {
 				[value: 96, color: "#bc2323"]
 			]   
 		}
-        valueTile("humidity", "device.humidity", inactiveLabel: false) {
-            state "default", label:'${currentValue}%', unit:"Humidity"
-        }
+    
         
         //tile added for operating state - Create the tiles for each possible state, look at other examples if you wish to change the icons here. 
         
@@ -129,7 +126,7 @@ metadata {
                         state "coolLevelDown", label:'  ', action:"coolLevelDown", icon:"st.thermostat.thermostat-down"
         }        
         main "temperature"
-        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" , "humidity","thermostatOperatingState", "refresh",])
+        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" ,"thermostatOperatingState", "refresh",])
     }
 }
 
@@ -391,38 +388,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         def statusHeat = response.data.latestData.uiData.StatusHeat
         
 
-		
-        
-        
-        
-       
-        
-        //humidity section - needs work 
-        
-        
-        def IndoorHumiditySensorAvailable = response.data.latestData.uiData.IndoorHumiditySensorAvailable
-        def OutdoorHumidityAvailable = response.data.latestData.uiData.OutdoorHumidityAvailable
-        def OutdoorHumidity = response.data.latestData.uiData.OutdoorHumidity
-        def IndoorHumidity = response.data.latestData.uiData.IndoorHumidity
-		def WeatherHumidity = response.data.latestData.uiData.WeatherHumidity
-        def Humidity = OutdoorHumidity
-   
 
-		if (OutdoorHumiditySensorAvailable){
-        	Humidity = OutdoorHumidity
-        } else {
-            Humidity = WeatherHumidity
-        }
-
-        if (IndoorHumiditySensorAvailable){
-        	Humidity = IndoorHumidity
-        }else {
-        	Humidity = WeatherHumidity
-        }
-        
-        
-        //humidity section end 
-        
         
         
         def operatingState = "idle"
@@ -436,7 +402,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         log.debug curTemp
         log.debug fanMode
         log.debug switchPos
-        log.debug remoteHumidity
+       
  		//fan mode 0=auto, 2=circ, 1=on
         
         if(fanMode==0)
@@ -459,8 +425,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
         sendEvent(name: 'heatingSetpoint', value: heatSetPoint as Integer)
         sendEvent(name: 'temperature', value: curTemp as Integer, state: switchPos)
         
-        //still not sure why this is returning null in the console 
-        sendEvent(name: 'humidity', value: Humidity as Integer)
+       
 
  
     }
@@ -501,7 +466,7 @@ def login() {
         body: [timeOffset: '240', UserName: "${settings.username}", Password: "${settings.password}", RememberMe: 'false']
     ]
 
-	//data.cookiess = ''
+	data.cookiess = ''
 
     httpPost(params) { response ->
         log.debug "Request was successful, $response.status"
@@ -513,7 +478,7 @@ def login() {
 			data.cookiess = data.cookiess+cookie+';'
             }
         }
-        log.debug "cookies: $data.cookies"
+        log.debug "cookies: $data.cookiess"
 
     }
     
