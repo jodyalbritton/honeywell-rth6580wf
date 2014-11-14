@@ -321,11 +321,11 @@ def setStatus() {
     login()
   log.debug "Executing 'setStatus'"
 def today= new Date()
-log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/SubmitControlScreenChanges"
+log.debug "https://mytotalconnectcomfort.com/portalDevice/SubmitControlScreenChanges"
 
     
     def params = [
-        uri: "https://rs.alarmnet.com/TotalConnectComfort/Device/SubmitControlScreenChanges",
+        uri: "https://mytotalconnectcomfort.com/portalDevice/SubmitControlScreenChanges",
         headers: [
               'Accept': 'application/json, text/javascript, */*; q=0.01',
               'DNT': '1',
@@ -334,7 +334,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/SubmitControlScree
               'Accept-Language': 'en-US,en,q=0.8',
               'Connection': 'keep-alive',
               'Host': 'rs.alarmnet.com',
-              'Referer': "https://rs.alarmnet.com/TotalConnectComfort/Device/Control/${settings.honeywelldevice}",
+              'Referer': "https://mytotalconnectcomfort.com/portalDevice/Control/${settings.honeywelldevice}",
               'X-Requested-With': 'XMLHttpRequest',
               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36',
               'Cookie': data.cookiess        ],
@@ -355,12 +355,12 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/SubmitControlScree
 def getStatus() {
   log.debug "Executing 'getStatus'"
 def today= new Date()
-log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/${settings.honeywelldevice}?_=$today.time"
+log.debug "https://mytotalconnectcomfort.com/portalDevice/CheckDataSession/${settings.honeywelldevice}?_=$today.time"
 
 
 
     def params = [
-        uri: "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/${settings.honeywelldevice}",
+        uri: "https://mytotalconnectcomfort.com/portalDevice/CheckDataSession/${settings.honeywelldevice}",
         headers: [
               'Accept': '*/*',
               'DNT': '1',
@@ -369,7 +369,7 @@ log.debug "https://rs.alarmnet.com/TotalConnectComfort/Device/CheckDataSession/$
               'Accept-Language': 'en-US,en,q=0.8',
               'Connection': 'keep-alive',
               'Host': 'rs.alarmnet.com',
-              'Referer': 'https://rs.alarmnet.com/TotalConnectComfort/',
+              'Referer': 'https://mytotalconnectcomfort.com/portal',
               'X-Requested-With': 'XMLHttpRequest',
               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36',
               'Cookie': data.cookiess        ],
@@ -453,7 +453,7 @@ def login() {
 
         
     def params = [
-        uri: 'https://rs.alarmnet.com/TotalConnectComfort/',
+        uri: 'https://mytotalconnectcomfort.com/portal',
         headers: [
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
