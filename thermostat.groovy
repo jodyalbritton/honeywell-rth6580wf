@@ -1,5 +1,7 @@
 /**
  *  Total Comfort API
+ *   
+ *  Based on Code by Eric Thomas
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -49,9 +51,10 @@ metadata {
             )
         }
         standardTile("thermostatMode", "device.thermostatMode", inactiveLabel: false, canChangeIcon: true) {
-            state "heat", label:'${name}', action:"thermostat.off", icon: "st.Weather.weather14", backgroundColor: '#E14902'
-            state "off", label:'${name}', action:"thermostat.cool", icon: "st.Outdoor.outdoor19"
+        	state "off", label:'${name}', action:"thermostat.cool", icon: "st.Outdoor.outdoor19"
             state "cool", label:'${name}', action:"thermostat.heat", icon: "st.Weather.weather7", backgroundColor: '#003CEC'
+            state "heat", label:'${name}', action:"thermostat.auto", icon: "st.Weather.weather14", backgroundColor: '#E14902'  
+            state "auto", label:'${name}', action:"thermostat.off", icon: "st.Weather.weather3", backgroundColor: '#44b621'
         }
         standardTile("thermostatFanMode", "device.thermostatFanMode", inactiveLabel: false, canChangeIcon: true) {
             state "auto", label:'${name}', action:"thermostat.fanOn", icon: "st.Appliances.appliances11"
@@ -231,6 +234,10 @@ def off() {
   setThermostatMode(2)
 }
 
+def auto() {
+  setThermostatMode(4)
+}
+
 def heat() {
   setThermostatMode(1)
 }
@@ -263,6 +270,8 @@ def setThermostatMode(mode) {
           switchPos = 'off'
         if(mode==3)
           switchPos = 'cool'
+       if(mode==4)
+          switchPos = 'auto'
   if(data.SetStatus==1)
   {
         sendEvent(name: 'thermostatMode', value: switchPos)
@@ -416,6 +425,8 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
           switchPos = 'off'
         if(switchPos==3)
           switchPos = 'cool'
+        if(switchPos==4)
+          switchPos = 'auto'
 
 
         sendEvent(name: 'thermostatOperatingState', value: operatingState)
