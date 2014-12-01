@@ -322,7 +322,6 @@ def setThermostatFanMode(mode) {
 def poll() {
 refresh()
 }
-
 def setStatus() {
 
   data.SetStatus = 0
@@ -377,7 +376,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
               'Cache-Control': 'max-age=0',
               'Accept-Language': 'en-US,en,q=0.8',
               'Connection': 'keep-alive',
-              'Host': 'rs.alarmnet.com',
+              'Host': 'mytotalconnectcomfort.com',
               'Referer': 'https://mytotalconnectcomfort.com/portal',
               'X-Requested-With': 'XMLHttpRequest',
               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36',
@@ -469,9 +468,9 @@ def login() {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Encoding': 'sdch',
-            'Host': 'rs.alarmnet.com',
+            'Host': 'mytotalconnectcomfort.com',
             'DNT': '1',
-            'Origin': 'https://rs.alarmnet.com/TotalComfort/',
+            'Origin': 'mytotalconnectcomfort.com/portal/',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36'
         ],
         body: [timeOffset: '240', UserName: "${settings.username}", Password: "${settings.password}", RememberMe: 'false']
