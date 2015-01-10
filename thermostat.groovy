@@ -26,8 +26,8 @@ metadata {
     capability "Refresh"
     capability "Temperature Measurement"
     capability "Sensor"
-        
-      command "heatLevelUp"
+    capability "Relative Humidity Measurement"    
+    command "heatLevelUp"
     command "heatLevelDown"
     command "coolLevelUp"
     command "coolLevelDown"
@@ -74,22 +74,22 @@ metadata {
                 [value: 96, color: "#bc2323"]
             ]               
         }
-        valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false) 
-    {
-      state "default", label:'Cool @${currentValue}°F', unit:"F",
-       backgroundColors:
-       [
-        [value: 31, color: "#153591"],
-        [value: 44, color: "#1e9cbb"],
-        [value: 59, color: "#90d2a7"],
-        [value: 74, color: "#44b621"],
-        [value: 84, color: "#f1d801"],
-        [value: 95, color: "#d04e00"],
-        [value: 96, color: "#bc2323"]
-      ]   
-    }
+       valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false) 
+    	  {
+          state "default", label:'Cool @${currentValue}°F', unit:"F",
+           backgroundColors:
+           [
+            [value: 31, color: "#153591"],
+            [value: 44, color: "#1e9cbb"],
+            [value: 59, color: "#90d2a7"],
+            [value: 74, color: "#44b621"],
+            [value: 84, color: "#f1d801"],
+            [value: 95, color: "#d04e00"],
+            [value: 96, color: "#bc2323"]
+          ]   
+        }
         valueTile("heatingSetpoint", "device.heatingSetpoint", inactiveLabel: false) 
-    {
+    	{
       state "default", label:'Heat @${currentValue}°F', unit:"F",
        backgroundColors:
        [
@@ -127,9 +127,14 @@ metadata {
         }
         standardTile("coolLevelDown", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false) {
                         state "coolLevelDown", label:'  ', action:"coolLevelDown", icon:"st.thermostat.thermostat-down"
-        }        
+        }
+        
+        valueTile("relativeHumidity", "device.relativeHumidity", inactiveLabel: false){
+        	state "default", label:'${currentValue}', unit:"%"
+        	
+		}
         main "temperature"
-        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" ,"thermostatOperatingState", "refresh",])
+        details(["temperature", "thermostatMode", "thermostatFanMode",   "heatLevelUp", "heatingSetpoint" , "heatLevelDown", "coolLevelUp","coolingSetpoint", "coolLevelDown" ,"thermostatOperatingState", "refresh","relativeHumidity"])
     }
 }
 
@@ -337,7 +342,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/SubmitControlScreenCh
         headers: [
               'Accept': 'application/json, text/javascript, */*; q=0.01',
               'DNT': '1',
-        'Accept-Encoding': 'gzip,deflate,sdch',
+        	  'Accept-Encoding': 'gzip,deflate,sdch',
               'Cache-Control': 'max-age=0',
               'Accept-Language': 'en-US,en,q=0.8',
               'Connection': 'keep-alive',
@@ -387,19 +392,20 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         log.debug "Request was successful, $response.status"
 
         
-    def curTemp = response.data.latestData.uiData.DispTemperature
+        def curTemp = response.data.latestData.uiData.DispTemperature
         def fanMode = response.data.latestData.fanData.fanMode
         def switchPos = response.data.latestData.uiData.SystemSwitchPosition
         def coolSetPoint = response.data.latestData.uiData.CoolSetpoint
         def heatSetPoint = response.data.latestData.uiData.HeatSetpoint
         def statusCool = response.data.latestData.uiData.StatusCool
         def statusHeat = response.data.latestData.uiData.StatusHeat
+        def curHumidity = response.data.latestData.uiData.IndoorHumidity
         
 
-	log.trace("IndoorHumidity: ${response.data.latestData.uiData.IndoorHumidity}")
-	log.trace("IndoorHumiditySensorAvailable: ${response.data.latestData.uiData.IndoorHumiditySensorAvailable}")        
-	log.trace("IndoorHumiditySensorNotFault: ${response.data.latestData.uiData.IndoorHumiditySensorNotFault}")        
-	log.trace("IndoorHumidStatus: ${response.data.latestData.uiData.IndoorHumidStatus}")        
+        log.trace("IndoorHumidity: ${response.data.latestData.uiData.IndoorHumidity}")
+        log.trace("IndoorHumiditySensorAvailable: ${response.data.latestData.uiData.IndoorHumiditySensorAvailable}")        
+        log.trace("IndoorHumiditySensorNotFault: ${response.data.latestData.uiData.IndoorHumiditySensorNotFault}")        
+        log.trace("IndoorHumidStatus: ${response.data.latestData.uiData.IndoorHumidStatus}")        
 
         
         
@@ -408,6 +414,9 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
             operatingState = "cooling"
         } else if (statusHeat == 1 && switchPos == 1) {
             operatingState = "heating"
+           
+        } else {
+          	operatingState = "unknown"
         }
         
         
@@ -415,7 +424,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         log.debug fanMode
         log.debug switchPos
        
-    //fan mode 0=auto, 2=circ, 1=on
+        //fan mode 0=auto, 2=circ, 1=on
         
         if(fanMode==0)
           fanMode = 'auto'
@@ -438,6 +447,8 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         sendEvent(name: 'coolingSetpoint', value: coolSetPoint as Integer)
         sendEvent(name: 'heatingSetpoint', value: heatSetPoint as Integer)
         sendEvent(name: 'temperature', value: curTemp as Integer, state: switchPos)
+        sendEvent(name: 'relativeHumidity', value: curHumidity as Integer)
+        
         
        
 
