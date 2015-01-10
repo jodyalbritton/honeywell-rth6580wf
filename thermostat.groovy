@@ -396,6 +396,10 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         def statusHeat = response.data.latestData.uiData.StatusHeat
         
 
+	log.trace("IndoorHumidity: ${response.data.latestData.uiData.IndoorHumidity}")
+	log.trace("IndoorHumiditySensorAvailable: ${response.data.latestData.uiData.IndoorHumiditySensorAvailable}")        
+	log.trace("IndoorHumiditySensorNotFault: ${response.data.latestData.uiData.IndoorHumiditySensorNotFault}")        
+	log.trace("IndoorHumidStatus: ${response.data.latestData.uiData.IndoorHumidStatus}")        
 
         
         
