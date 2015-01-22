@@ -388,7 +388,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
               'Cookie': data.cookiess        ],
     ]
 
-    httpGet(params) { response ->
+        httpGet(params) { response ->
         log.debug "Request was successful, $response.status"
 
         
@@ -407,9 +407,12 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         log.trace("IndoorHumiditySensorNotFault: ${response.data.latestData.uiData.IndoorHumiditySensorNotFault}")        
         log.trace("IndoorHumidStatus: ${response.data.latestData.uiData.IndoorHumidStatus}")        
 
+        //Operating State Section 
+        //Set the operating state to off 
         
+        def operatingState = "off"
         
-        def operatingState = "idle"
+        //Check the status of heat and cool 
         if(statusCool == 1 && switchPos == 3) {
             operatingState = "cooling"
         } else if (statusHeat == 1 && switchPos == 1) {
@@ -419,6 +422,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
           	operatingState = "unknown"
         }
         
+        //End Operating State
         
         log.debug curTemp
         log.debug fanMode
@@ -440,7 +444,7 @@ log.debug "https://mytotalconnectcomfort.com/portal/Device/CheckDataSession/${se
         if(switchPos==4)
           switchPos = 'auto'
 
-
+	//Send events 
         sendEvent(name: 'thermostatOperatingState', value: operatingState)
         sendEvent(name: 'thermostatFanMode', value: fanMode)
         sendEvent(name: 'thermostatMode', value: switchPos)
